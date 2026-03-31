@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: golearn-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: |
+      apt-get update -qq && apt-get install -y golang-go
+      cd backend && npm install
+    startCommand: node backend/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
