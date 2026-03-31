@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoLearn — Master Go, One Problem at a Time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-0: #0a0c10;
+  --bg-1: #0e1117;
+  --bg-2: #141820;
+  --bg-3: #1c2230;
+  --bg-card: #111520;
+  --border: #1e2840;
+  --border-bright: #2a3860;
+  --go-cyan: #00d4ff;
+  --go-cyan-dim: #00a8cc;
+  --go-teal: #00ffd4;
+  --go-blue: #4fa8ff;
+  --go-purple: #a78bfa;
+  --accent-gold: #f0c040;
+  --text-0: #e8edf8;
+  --text-1: #9aa8c0;
+  --text-2: #5a6888;
+  --green: #22dd88;
+  --red: #ff4466;
+  --orange: #ff9944;
+  --yellow: #f0c040;
+  --sidebar-w: 300px;
+  --header-h: 56px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--bg-0);
+  color: var(--text-0);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ─────────────────────────────────────────── */
+header {
+  height: var(--header-h);
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.logo-gopher {
+  width: 32px; height: 32px;
+  background: var(--go-cyan);
+  border-radius: 50% 50% 45% 45%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 0 16px rgba(0,212,255,0.4);
+}
+
+.logo-text span { color: var(--go-cyan); }
+
+.header-stats {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.stat-pill {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.78rem; font-weight: 600;
+  color: var(--text-1);
+  background: var(--bg-2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.stat-pill .stat-n { color: var(--go-cyan); font-weight: 800; font-size: 0.9rem; }
+.stat-pill.solved .stat-n { color: var(--green); }
+
+.progress-ring { width: 36px; height: 36px; }
+.progress-ring circle {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+.ring-bg { stroke: var(--bg-3); }
+.ring-fill { stroke: var(--go-cyan); transition: stroke-dashoffset 0.5s ease; }
+
+/* ── LAYOUT ─────────────────────────────────────────── */
+.app {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ─────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg-1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sidebar-search {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-input {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px 8px 34px;
+  color: var(--text-0);
+  font-family: 'Syne', sans-serif;
+  font-size: 0.82rem;
+  outline: none;
+  transition: border-color 0.2s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235a6888' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+
+.search-input:focus { border-color: var(--go-cyan); }
+.search-input::placeholder { color: var(--text-2); }
+
+.sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-3) transparent;
+}
+
+.category-group { border-bottom: 1px solid var(--border); }
+
+.category-header {
+  padding: 8px 14px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s;
+  position: sticky;
+  top: 0;
+  background: var(--bg-1);
+  z-index: 1;
+}
+
+.category-header:hover { color: var(--text-1); }
+
+.cat-badge {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  color: var(--text-2);
+}
+
+.problem-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px 9px 22px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-left: 2px solid transparent;
+  font-size: 0.82rem;
+}
+
+.problem-item:hover { background: var(--bg-2); }
+
+.problem-item.active {
+  background: rgba(0,212,255,0.07);
+  border-left-color: var(--go-cyan);
+}
+
+.problem-item.solved .problem-check { color: var(--green); }
+
+.problem-check {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-2);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px;
+  color: transparent;
+  transition: all 0.2s;
+}
+
+.problem-item.solved .problem-check {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--bg-0);
+}
+
+.problem-title { flex: 1; color: var(--text-0); line-height: 1.3; }
+.problem-item.solved .problem-title { color: var(--text-1); }
+
+.diff-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.diff-easy { background: rgba(34,221,136,0.15); color: var(--green); }
+.diff-medium { background: rgba(240,192,64,0.15); color: var(--yellow); }
+.diff-hard { background: rgba(255,68,102,0.15); color: var(--red); }
+
+/* ── MAIN CONTENT ────────────────────────────────────── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── SPLIT PANE ──────────────────────────────────────── */
+.split {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── PROBLEM PANEL ───────────────────────────────────── */
+.problem-panel {
+  width: 380px;
+  flex-shrink: 0;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.problem-panel-header {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.problem-num {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--go-cyan);
+  margin-bottom: 4px;
+}
+
+.problem-panel-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text-0);
+  margin-bottom: 8px;
+}
+
+.problem-meta {
+  display: flex; align-items: center; gap: 8px;
+}
+
+.tag-pill {
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: var(--bg-3);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.problem-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-3) transparent;
+}
+
+.problem-desc {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--text-1);
+  white-space: pre-wrap;
+}
+
+.problem-desc code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  background: var(--bg-3);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: var(--go-cyan);
+}
+
+.problem-desc pre {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 10px 0;
+  overflow-x: auto;
+}
+
+.problem-desc pre code {
+  background: none;
+  padding: 0;
+  color: var(--text-0);
+  font-size: 0.78rem;
+}
+
+.hints-section { margin-top: 16px; }
+.hints-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.hint-item {
+  display: flex; gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-1);
+  margin-bottom: 6px;
+  line-height: 1.5;
+  padding: 6px 10px;
+  background: rgba(0,212,255,0.04);
+  border-left: 2px solid var(--go-cyan);
+  border-radius: 0 6px 6px 0;
+}
+
+/* ── EDITOR PANEL ────────────────────────────────────── */
+.editor-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.editor-toolbar {
+  height: 44px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.toolbar-file {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-2);
+  display: flex; align-items: center; gap: 6px;
+}
+
+.toolbar-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--go-cyan); }
+
+.btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: all 0.15s;
+}
+
+.btn-run {
+  background: var(--go-cyan);
+  color: var(--bg-0);
+  margin-left: auto;
+  box-shadow: 0 0 16px rgba(0,212,255,0.25);
+}
+
+.btn-run:hover { background: var(--go-teal); transform: translateY(-1px); }
+.btn-run:active { transform: translateY(0); }
+.btn-run:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-reset {
+  background: var(--bg-3);
+  color: var(--text-1);
+  border: 1px solid var(--border);
+}
+
+.btn-reset:hover { border-color: var(--border-bright); color: var(--text-0); }
+
+.btn-solution {
+  background: transparent;
+  color: var(--go-purple);
+  border: 1px solid rgba(167,139,250,0.3);
+  font-size: 0.72rem;
+}
+
+.btn-solution:hover { background: rgba(167,139,250,0.1); }
+
+.run-hint {
+  font-size: 0.68rem;
+  color: var(--text-2);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+#editor-container {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── OUTPUT PANEL ────────────────────────────────────── */
+.output-panel {
+  height: 200px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-1);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.output-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 14px;
+  gap: 2px;
+}
+
+.output-tab {
+  padding: 7px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.output-tab.active { color: var(--text-0); border-bottom-color: var(--go-cyan); }
+.output-tab:hover:not(.active) { color: var(--text-1); }
+
+.output-body {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-3) transparent;
+}
+
+.output-content { display: none; }
+.output-content.active { display: block; }
+
+.output-stdout { color: var(--text-0); white-space: pre-wrap; }
+.output-stderr { color: var(--red); white-space: pre-wrap; }
+
+.verdict {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.verdict-pass { background: rgba(34,221,136,0.1); color: var(--green); border: 1px solid rgba(34,221,136,0.2); }
+.verdict-fail { background: rgba(255,68,102,0.1); color: var(--red); border: 1px solid rgba(255,68,102,0.2); }
+.verdict-icon { font-size: 1rem; }
+
+.diff-view { margin-top: 8px; }
+.diff-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  margin-bottom: 4px;
+}
+
+.diff-block {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  white-space: pre-wrap;
+  font-size: 0.78rem;
+}
+
+.diff-expected { border-left: 3px solid var(--green); color: var(--green); }
+.diff-actual { border-left: 3px solid var(--red); color: var(--red); }
+.diff-actual.correct { border-left-color: var(--green); color: var(--green); }
+
+/* ── EMPTY STATE ────────────────────────────────────── */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-2);
+  text-align: center;
+  padding: 40px;
+  gap: 12px;
+}
+
+.empty-gopher { font-size: 56px; filter: grayscale(0.3); }
+.empty-title { font-size: 1.2rem; font-weight: 700; color: var(--text-1); }
+.empty-sub { font-size: 0.85rem; max-width: 300px; line-height: 1.6; }
+
+/* ── TOAST ──────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--bg-3);
+  border: 1px solid var(--border-bright);
+  color: var(--text-0);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  display: flex; align-items: center; gap: 8px;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: rgba(34,221,136,0.4); }
+.toast.error { border-color: rgba(255,68,102,0.4); }
+
+/* ── LOADING SPINNER ────────────────────────────────── */
+.spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(0,212,255,0.3);
+  border-top-color: var(--go-cyan);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── CATEGORY COLORS ────────────────────────────────── */
+.cat-0 { --cat-color: #00d4ff; }
+.cat-1 { --cat-color: #00ffd4; }
+.cat-2 { --cat-color: #4fa8ff; }
+.cat-3 { --cat-color: #a78bfa; }
+.cat-4 { --cat-color: #f0c040; }
+.cat-5 { --cat-color: #ff9944; }
+.cat-6 { --cat-color: #ff4466; }
+.cat-7 { --cat-color: #22dd88; }
+.cat-8 { --cat-color: #00d4ff; }
+.cat-9 { --cat-color: #4fa8ff; }
+.cat-10 { --cat-color: #a78bfa; }
+
+.category-header { color: var(--cat-color, var(--text-2)); }
+
+/* ── WELCOME SCREEN ─────────────────────────────────── */
+#welcome {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  background: var(--bg-0);
+  background-image: 
+    radial-gradient(ellipse 600px 400px at 50% 50%, rgba(0,212,255,0.04) 0%, transparent 70%);
+}
+
+.welcome-gopher {
+  font-size: 72px;
+  margin-bottom: 16px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.welcome-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+
+.welcome-title em { 
+  color: var(--go-cyan); 
+  font-style: normal;
+  text-shadow: 0 0 30px rgba(0,212,255,0.4);
+}
+
+.welcome-sub {
+  color: var(--text-1);
+  font-size: 0.95rem;
+  max-width: 500px;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+.welcome-stats {
+  display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+  margin-bottom: 28px;
+}
+
+.ws-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 24px;
+  min-width: 100px;
+}
+
+.ws-n {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--go-cyan);
+  display: block;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.ws-label {
+  font-size: 0.72rem;
+  color: var(--text-2);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.btn-start {
+  background: var(--go-cyan);
+  color: var(--bg-0);
+  padding: 12px 32px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 24px rgba(0,212,255,0.3);
+  transition: all 0.2s;
+}
+
+.btn-start:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(0,212,255,0.5); }
+
+/* ── SCROLLBAR ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-gopher">🦫</div>
+    <div class="logo-text">Go<span>Learn</span></div>
+  </div>
+
+  <div class="header-stats">
+    <div class="stat-pill solved">
+      <span class="stat-n" id="solved-count">0</span>
+      <span>solved</span>
+    </div>
+    <div class="stat-pill">
+      <span class="stat-n" id="total-count">30</span>
+      <span>problems</span>
+    </div>
+    <svg class="progress-ring" viewBox="0 0 36 36">
+      <circle class="ring-bg" cx="18" cy="18" r="15.5"/>
+      <circle class="ring-fill" id="ring-fill" cx="18" cy="18" r="15.5"
+              stroke-dasharray="97.4 97.4"
+              stroke-dashoffset="97.4"/>
+    </svg>
+  </div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-search">
+      <input type="text" class="search-input" placeholder="Search problems..." id="search-input">
+    </div>
+    <div class="sidebar-list" id="sidebar-list"></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="main-area">
+    <!-- Welcome screen -->
+    <div id="welcome">
+      <div class="welcome-gopher">🦫</div>
+      <h1 class="welcome-title">Master <em>Go</em><br>One Problem at a Time</h1>
+      <p class="welcome-sub">30 carefully crafted problems covering every concept in the Go learning roadmap — from Hello World to generics and reflection.</p>
+      <div class="welcome-stats">
+        <div class="ws-box"><span class="ws-n">11</span><span class="ws-label">Topics</span></div>
+        <div class="ws-box"><span class="ws-n">30</span><span class="ws-label">Problems</span></div>
+        <div class="ws-box"><span class="ws-n" id="ws-solved">0</span><span class="ws-label">Solved</span></div>
+      </div>
+      <button class="btn-start" onclick="startFirst()">Start Learning →</button>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Monaco Editor CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+
+<script>
+// ─── CONFIG ────────────────────────────────────────────────────────────────
+// Use a relative path — the frontend is served by the same Express server,
+// so /api/... always points to the right place regardless of hostname or port.
+// If you ever separate frontend/backend, change this to your backend's full URL.
+const API = '';
+
+// ─── STATE ─────────────────────────────────────────────────────────────────
+let problems = [];
+let currentProblem = null;
+let editor = null;
+let solved = new Set(JSON.parse(localStorage.getItem('golearn-solved') || '[]'));
+let running = false;
+
+// ─── MONACO SETUP ──────────────────────────────────────────────────────────
+// Only load Monaco + define theme here. Do NOT create the editor yet —
+// #editor-container doesn't exist until a problem is clicked.
+let monacoReady = false;
+require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
+require(['vs/editor/editor.main'], () => {
+  monaco.editor.defineTheme('golearn', {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+      { token: 'comment', foreground: '4a5a80', fontStyle: 'italic' },
+      { token: 'keyword', foreground: '00d4ff' },
+      { token: 'string', foreground: '00ffd4' },
+      { token: 'number', foreground: 'f0c040' },
+      { token: 'type', foreground: 'a78bfa' },
+      { token: 'function', foreground: '4fa8ff' },
+    ],
+    colors: {
+      'editor.background': '#0e1117',
+      'editor.foreground': '#e8edf8',
+      'editorLineNumber.foreground': '#2a3860',
+      'editorLineNumber.activeForeground': '#4a6080',
+      'editor.selectionBackground': '#1e3050',
+      'editor.inactiveSelectionBackground': '#1a2840',
+      'editorCursor.foreground': '#00d4ff',
+      'editor.lineHighlightBackground': '#141820',
+    }
+  });
+  monacoReady = true;
+  loadProblems();
+});
+
+// ─── LOAD PROBLEMS ─────────────────────────────────────────────────────────
+async function loadProblems() {
+  try {
+    const r = await fetch(`${API}/api/problems`);
+    if (!r.ok) throw new Error('Failed to load');
+    problems = await r.json();
+    renderSidebar(problems);
+    updateProgress();
+  } catch (e) {
+    showToast('⚠️ Cannot reach API. Is the backend running? → cd backend && npm start', 'error');
+    // Load mock for demo
+    renderSidebar([]);
+  }
+}
+
+// ─── SIDEBAR ───────────────────────────────────────────────────────────────
+const CATEGORIES = [
+  "Introduction to Go", "Language Basics", "Composite Types",
+  "Control Flow", "Functions", "Pointers & Memory",
+  "Methods & Interfaces", "Error Handling", "Concurrency",
+  "Standard Library", "Advanced Topics"
+];
+
+function renderSidebar(list) {
+  const sidebar = document.getElementById('sidebar-list');
+  sidebar.innerHTML = '';
+
+  const byCat = {};
+  list.forEach(p => {
+    if (!byCat[p.category]) byCat[p.category] = [];
+    byCat[p.category].push(p);
+  });
+
+  Object.entries(byCat).forEach(([cat, probs], idx) => {
+    const solvedInCat = probs.filter(p => solved.has(p.id)).length;
+    const group = document.createElement('div');
+    group.className = `category-group cat-${idx}`;
+
+    const header = document.createElement('div');
+    header.className = 'category-header';
+    header.innerHTML = `
+      <span>${CATEGORIES[cat - 1] || probs[0].categoryName}</span>
+      <span class="cat-badge">${solvedInCat}/${probs.length}</span>
+    `;
+    group.appendChild(header);
+
+    probs.forEach(p => {
+      const item = document.createElement('div');
+      item.className = `problem-item ${solved.has(p.id) ? 'solved' : ''} ${currentProblem?.id === p.id ? 'active' : ''}`;
+      item.dataset.id = p.id;
+      item.innerHTML = `
+        <div class="problem-check">${solved.has(p.id) ? '✓' : ''}</div>
+        <span class="problem-title">${p.title}</span>
+        <span class="diff-badge diff-${p.difficulty}">${p.difficulty[0].toUpperCase()}</span>
+      `;
+      item.onclick = () => loadProblem(p.id);
+      group.appendChild(item);
+    });
+
+    sidebar.appendChild(group);
+  });
+}
+
+// ─── LOAD PROBLEM ──────────────────────────────────────────────────────────
+async function loadProblem(id) {
+  const p = problems.find(p => p.id === id);
+  if (!p) return;
+  currentProblem = p;
+
+  // Show editor area — inject HTML first, then yield one tick so the browser
+  // finishes inserting #editor-container before Monaco tries to mount into it.
+  const main = document.getElementById('main-area');
+  const needsInit = !!document.getElementById('welcome');
+  if (needsInit) {
+    main.innerHTML = getEditorHTML();
+    if (editor) { editor.dispose(); editor = null; }
+    await new Promise(resolve => setTimeout(resolve, 0));
+    initEditorArea();
+  }
+
+  // Highlight active
+  document.querySelectorAll('.problem-item').forEach(el => {
+    el.classList.toggle('active', parseInt(el.dataset.id) === id);
+  });
+
+  // Fill problem panel
+  document.getElementById('prob-num').textContent = `Problem ${p.id} · ${p.categoryName}`;
+  document.getElementById('prob-title').textContent = p.title;
+  document.getElementById('prob-diff').className = `diff-badge diff-${p.difficulty}`;
+  document.getElementById('prob-diff').textContent = p.difficulty.charAt(0).toUpperCase() + p.difficulty.slice(1);
+
+  const tags = (p.tags || []).map(t => `<span class="tag-pill">${t}</span>`).join('');
+  document.getElementById('prob-tags').innerHTML = tags;
+
+  // Render description
+  document.getElementById('prob-desc').innerHTML = renderDesc(p.description);
+
+  // Hints
+  const hintsEl = document.getElementById('prob-hints');
+  if (p.hints && p.hints.length) {
+    hintsEl.innerHTML = `
+      <div class="hints-section">
+        <div class="hints-title" onclick="toggleHints(this)">
+          <span>💡</span> Hints (${p.hints.length}) — click to reveal
+        </div>
+        <div class="hints-body" style="display:none">
+          ${p.hints.map(h => `<div class="hint-item">→ ${h}</div>`).join('')}
+        </div>
+      </div>`;
+  } else {
+    hintsEl.innerHTML = '';
+  }
+
+  // Load saved code or starter
+  const savedKey = `golearn-code-${id}`;
+  const savedCode = localStorage.getItem(savedKey);
+  editor.setValue(savedCode || p.starterCode || '');
+  editor.setPosition({ lineNumber: 1, column: 1 });
+
+  // Clear output
+  clearOutput();
+}
+
+function toggleHints(el) {
+  const body = el.nextElementSibling;
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+  el.textContent = body.style.display === 'none'
+    ? `💡 Hints (${body.children.length}) — click to reveal`
+    : `💡 Hints — hidden`;
+}
+
+function renderDesc(text) {
+  // Convert backtick code to <code>, triple backticks to <pre><code>
+  return text
+    .replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => 
+      `<pre><code>${escapeHtml(code.trim())}</code></pre>`)
+    .replace(/`([^`]+)`/g, (_, code) => `<code>${escapeHtml(code)}</code>`)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── RUN CODE ──────────────────────────────────────────────────────────────
+async function runCode() {
+  if (running || !currentProblem) return;
+  running = true;
+
+  const code = editor.getValue();
+  const savedKey = `golearn-code-${currentProblem.id}`;
+  localStorage.setItem(savedKey, code);
+
+  const btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Running...';
+
+  clearOutput();
+  switchTab('output');
+
+  try {
+    const res = await fetch(`${API}/api/run`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, problemId: currentProblem.id })
+    });
+
+    const data = await res.json();
+    showResult(data);
+
+    if (data.passed) {
+      solved.add(currentProblem.id);
+      localStorage.setItem('golearn-solved', JSON.stringify([...solved]));
+      renderSidebar(problems);
+      updateProgress();
+      showToast('🎉 Correct! Problem solved!', 'success');
+    }
+  } catch (err) {
+    document.getElementById('tab-output').innerHTML =
+      `<div class="output-stderr">Error: ${err.message}\n\nMake sure the backend is running:\n  cd backend && npm install && npm start</div>`;
+    showToast('❌ Backend connection failed', 'error');
+  } finally {
+    running = false;
+    btn.disabled = false;
+    btn.innerHTML = '▶ Run Code';
+  }
+}
+
+function showResult(data) {
+  const tab = document.getElementById('tab-output');
+  const verdictClass = data.passed ? 'verdict-pass' : (data.exitCode !== 0 ? '' : 'verdict-fail');
+  const verdictIcon = data.passed ? '✅' : (data.exitCode !== 0 ? '💥' : '❌');
+  const verdictText = data.passed ? 'All Tests Passed' : (data.exitCode !== 0 ? 'Runtime Error' : 'Wrong Answer');
+  const timeStr = data.executionTime ? ` · ${data.executionTime}ms` : '';
+
+  let html = '';
+  if (data.expected !== null) {
+    html += `<div class="verdict ${verdictClass}">
+      <span class="verdict-icon">${verdictIcon}</span>
+      <span>${verdictText}${timeStr}</span>
+    </div>`;
+  }
+
+  if (data.stderr) {
+    html += `<div class="output-stderr">${escapeHtml(data.stderr)}</div>`;
+  }
+
+  if (data.stdout) {
+    html += `<div class="output-stdout">${escapeHtml(data.stdout)}</div>`;
+  }
+
+  if (data.expected !== null && !data.passed && data.exitCode === 0) {
+    html += `<div class="diff-view">
+      <div class="diff-label">Expected</div>
+      <div class="diff-block diff-expected">${escapeHtml(data.expected)}</div>
+      <div class="diff-label">Your Output</div>
+      <div class="diff-block diff-actual">${escapeHtml(data.stdout || '(empty)')}</div>
+    </div>`;
+  }
+
+  tab.innerHTML = html;
+}
+
+// ─── TABS ──────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.output-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.output-content').forEach(c => c.classList.toggle('active', c.id === `tab-${tab}`));
+}
+
+function clearOutput() {
+  const tab = document.getElementById('tab-output');
+  if (tab) tab.innerHTML = '<span style="color:var(--text-2);font-size:0.8rem;">Click ▶ Run Code or press Ctrl+Enter</span>';
+}
+
+// ─── RESET / SOLUTION ──────────────────────────────────────────────────────
+function resetCode() {
+  if (!currentProblem) return;
+  if (confirm('Reset to starter code? Your changes will be lost.')) {
+    editor.setValue(currentProblem.starterCode || '');
+    localStorage.removeItem(`golearn-code-${currentProblem.id}`);
+    clearOutput();
+  }
+}
+
+async function showSolution() {
+  if (!currentProblem) return;
+  if (!confirm('Show solution? Try solving it yourself first!')) return;
+  
+  try {
+    // Fetch the full problem with solution (not exposed normally — we'll show a message instead)
+    showToast('💡 Check the hints panel for guidance!', 'success');
+  } catch (e) {}
+}
+
+// ─── PROGRESS ──────────────────────────────────────────────────────────────
+function updateProgress() {
+  const total = problems.length || 30;
+  const s = solved.size;
+  document.getElementById('solved-count').textContent = s;
+  document.getElementById('total-count').textContent = total;
+  const wsS = document.getElementById('ws-solved');
+  if (wsS) wsS.textContent = s;
+
+  const circumference = 2 * Math.PI * 15.5;
+  const offset = circumference * (1 - s / total);
+  document.getElementById('ring-fill').style.strokeDashoffset = offset;
+  document.getElementById('ring-fill').style.strokeDasharray = circumference;
+}
+
+// ─── SEARCH ────────────────────────────────────────────────────────────────
+document.getElementById('search-input').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase();
+  const filtered = q ? problems.filter(p =>
+    p.title.toLowerCase().includes(q) ||
+    p.categoryName.toLowerCase().includes(q) ||
+    (p.tags || []).some(t => t.includes(q))
+  ) : problems;
+  renderSidebar(filtered);
+});
+
+// ─── TOAST ─────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ─── WELCOME ───────────────────────────────────────────────────────────────
+function startFirst() {
+  if (problems.length) loadProblem(problems[0].id);
+}
+
+// ─── EDITOR HTML ───────────────────────────────────────────────────────────
+function getEditorHTML() {
+  return `
+    <div class="split">
+      <div class="problem-panel">
+        <div class="problem-panel-header">
+          <div class="problem-num" id="prob-num"></div>
+          <div class="problem-panel-title" id="prob-title"></div>
+          <div class="problem-meta">
+            <span class="diff-badge" id="prob-diff"></span>
+            <div id="prob-tags"></div>
+          </div>
+        </div>
+        <div class="problem-body">
+          <div class="problem-desc" id="prob-desc"></div>
+          <div id="prob-hints"></div>
+        </div>
+      </div>
+
+      <div class="editor-panel">
+        <div class="editor-toolbar">
+          <div class="toolbar-file">
+            <div class="toolbar-dot"></div>
+            main.go
+          </div>
+          <span class="run-hint">Ctrl+Enter to run</span>
+          <button class="btn btn-reset" onclick="resetCode()">↺ Reset</button>
+          <button class="btn btn-run" id="run-btn" onclick="runCode()">▶ Run Code</button>
+        </div>
+        <div id="editor-container"></div>
+        <div class="output-panel">
+          <div class="output-tabs">
+            <div class="output-tab active" data-tab="output" onclick="switchTab('output')">Output</div>
+            <div class="output-tab" data-tab="diff" onclick="switchTab('diff')">Expected</div>
+          </div>
+          <div class="output-body">
+            <div class="output-content active" id="tab-output">
+              <span style="color:var(--text-2);font-size:0.8rem;">Click ▶ Run Code or press Ctrl+Enter</span>
+            </div>
+            <div class="output-content" id="tab-diff"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function initEditorArea() {
+  const container = document.getElementById('editor-container');
+  if (!container) {
+    console.error('initEditorArea: #editor-container not found in DOM');
+    return;
+  }
+  editor = monaco.editor.create(container, {
+    value: '',
+    language: 'go',
+    theme: 'golearn',
+    fontSize: 14,
+    fontFamily: "'JetBrains Mono', monospace",
+    lineHeight: 22,
+    minimap: { enabled: false },
+    scrollBeyondLastLine: false,
+    automaticLayout: true,
+    tabSize: 4,
+    insertSpaces: false,
+    renderLineHighlight: 'line',
+    padding: { top: 12, bottom: 12 },
+  });
+  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runCode);
+}
+</script>
+</body>
+</html>
